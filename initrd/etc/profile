@@ -1,0 +1,42 @@
+# /etc/profile: This file contains system-wide defaults used by
+# all Bourne (and related) shells.
+# Set the values for some environment variables:
+
+export HOSTNAME="`cat /etc/hostname`"
+
+# Set the default system $PATH
+export PATH="./:/bin:/sbin:/usr/bin:/usr/sbin:/etc/script"
+export LD_LIBRARY_PATH="./:/usr/lib:/lib"
+export OLDPWD=/
+export HOME=/
+export USER='root'
+export PWD='/'
+export TERM='vt100'
+export SDDIR="/mnt/SD1"
+export PATH=$SDDIR:$PATH
+export ALSA_CONFIG_PATH=/usr/share/alsa/alsa.conf
+
+# Setting for tslib
+export TSDIR=/usr
+export TSLIB_PLUGINDIR=/lib/ts
+export TSLIB_TSDEVICE=/dev/input/event1
+export TSLIB_CONFFILE=/etc/ts.conf
+export TSLIB_CONSOLEDEVICE='none'
+export TSLIB_CALIBFILE=/etc/pointercal
+
+# Set a default shell prompt
+PS1='\u@\h:\w\$ '
+PS2='> '
+
+#unlimited core dump size
+ulimit -c unlimited
+
+#config coredump file path & filename
+#sysctl -p
+echo "1" > /proc/sys/kernel/core_uses_pid
+echo "/tmp/core-%e.%p" > /proc/sys/kernel/core_pattern
+
+# Default umask.  A umask of 022 prevents new files from being created group
+# and world writable.
+umask 022
+

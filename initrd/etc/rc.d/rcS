@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# Tell the viewers what's going to happen.
+echo "RUN: run script ..."
+
+####################### fstab ###########################
+# Mount all filesystems in fstab
+/bin/mount -a
+#cp -rf /etc/dev/* /dev
+echo "Mount fstab ..."
+
+if ! cat /proc/mounts | grep -w sysfs 1> /dev/null 2> /dev/null; then
+	mount -v sysfs /sys -n -t sysfs
+fi
+
+# Start portmap
+if [ -x /sbin/rpc.portmap ]; then
+   /sbin/rpc.portmap
+fi
+
+# MDEV Support
+# (Requires sysfs support in the kernel)
+echo "Enabling hot-plug ..."
+echo "/sbin/mdev" > /proc/sys/kernel/hotplug
+
+# Start the local setup procedure.
+if [ -x /etc/rc.d/rc.local ]; then
+  echo "Run rc.local ..."
+  . /etc/rc.d/rc.local
+fi
+
+# All done.

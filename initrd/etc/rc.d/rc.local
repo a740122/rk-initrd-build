@@ -1,0 +1,71 @@
+#!/bin/sh
+#
+# This script will be executed *after* all the other init scripts.
+# You can put your own initialization stuff in here
+
+COLOR_ERROR='\033[01;31m'
+COLOR_DEBUG='\033[01;34m'
+COLOR_NOTIFY='\033[01;33m'
+COLOR_INFO='\033[01;32m'
+COLOR_RESET='\033[00;00m'
+
+DEBUG()
+{
+    LOG_TEXT=$1
+    echo -e "${COLOR_DEBUG}${LOG_TEXT}${COLOR_RESET}"
+}
+
+ERROR()
+{
+    LOG_TEXT=$1
+    echo -e "${COLOR_ERROR}${LOG_TEXT}${COLOR_RESET}"
+}
+
+NOTIFY()
+{
+    LOG_TEXT=$1
+    echo -e "${COLOR_NOTIFY}${LOG_TEXT}${COLOR_RESET}"
+}
+
+
+DEBUG "==========================================================="
+DEBUG " MOUNTING USB  ... "
+DEBUG "==========================================================="
+count=1;
+while [ $count -le 5 ]; do
+   if [ -b /dev/sda1 ]; then
+       /bin/mount /dev/sda1 /mnt/usb > /dev/null 2>&1
+   elif [ -b /dev/sda ]; then
+       /bin/mount /dev/sda /mnt/usb > /dev/null 2>&1
+   fi
+   count=$(( $count + 1 ))
+   if [ -f /mnt/usb/update/update.sh ]; then
+       NOTIFY "==========================================================="
+       NOTIFY " RUNNING UPDATE ... "
+       NOTIFY "==========================================================="
+       /mnt/usb/update/update.sh auto-update
+       exit
+   fi
+   sleep 1
+done
+
+DEBUG "==========================================================="
+DEBUG " MOUNTING SD CARD  ... "
+DEBUG "==========================================================="
+count=1;
+while [ $count -le 5 ]; do
+    if [ -b /dev/mmcblk0p1 ]; then
+        /bin/mount /dev/mmcblk0p1 /mnt/mmc > /dev/null 2>&1
+    elif [ -b /dev/mmcblk0 ]; then
+        /bin/mount /dev/mmcblk0  /mnt/mmc > /dev/null 2>&1
+    fi
+    count=$(( $count + 1 ))
+    if [ -f /mnt/mmc/update/update.sh ]; then
+        NOTIFY "==========================================================="
+        NOTIFY " RUNNING UPDATE ... "
+        NOTIFY "==========================================================="
+        /mnt/mmc/update/update.sh auto-update
+        exit
+    fi
+    sleep 1
+done

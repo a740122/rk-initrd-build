@@ -1,0 +1,9 @@
+#
+# /etc/fstab: static file system information.
+#
+# file system      mount       type    options           dump    pass
+proc               /proc       proc    defaults          0       0
+sysfs              /sys        sysfs   defaults          0       0
+none               /var        tmpfs   defaults          0       0
+none               /tmp        tmpfs   defaults          0       0
+
