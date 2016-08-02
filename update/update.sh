@@ -107,23 +107,7 @@ update_init()
 ################# PARTITION EMMC ##############################################
 partition()
 {
-    cgpt create ${node}
-    cgpt add -t data -l loader1 -b 32K -s 4064 /dev/sdb 
-    cgpt add -t 1 -l reserved1 -b 32 -s 4064 /dev/sdb 
-    cgpt add -t 1 -l reserved2 -b 32 -s 4064 /dev/sdb 
-    cgpt add -t 1 -l loader2 -b 32 -s 4064 /dev/sdb 
-    cgpt add -t 1 -l atf -b 32 -s 4064 /dev/sdb 
-    cgpt add -t 1 -l boot -b 32 -s 4064 /dev/sdb 
-    cgpt add -t 1 -l rootfs -b 32 -s 4064 /dev/sdb    
-
-+	"uuid_disk=${uuid_gpt_disk};" \
-+	"name=loader1,start=32K,size=4064K,uuid=${uuid_gpt_loader1};" \
-+	"name=reserved1,size=64K,uuid=${uuid_gpt_reserved1};" \
-+	"name=reserved2,size=4M,uuid=${uuid_gpt_reserved2};" \
-+	"name=loader2,size=4MB,uuid=${uuid_gpt_loader2};" \
-+	"name=atf,size=128M,uuid=${uuid_gpt_atf};" \
-+	"name=boot,size=128M,bootable,uuid=${uuid_gpt_boot};" \
-+	"name=rootfs,size=-,uuid=${uuid_gpt_rootfs};\0" \
+    # done int uboot
 }
 
 ################# UPDATEU BOOT ##################################################
