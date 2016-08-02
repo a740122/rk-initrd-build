@@ -49,11 +49,11 @@ ROOTFS_SIGNATURE=rootfs.sgn
 ################## PARTITION INFO  ############################################
 #device
 node=/dev/mmcblk1 #emmc
-fpath=/mnt/usb/update
+fpath=/mnt/mmc/update
 
 #partition numbers
-part_boot=${node}"p1"
-part_rootfs=${node}"p2"
+part_boot=${node}"p6"
+part_rootfs=${node}"p7"
 
 update_fail() 
 {
@@ -127,7 +127,7 @@ update_boot()
     # fi
 
     INFO "Writing ${BOOT_IMAGE} on ${part_boot} ..."
-    /bin/dd if=${fpath}/${BOOT_IMAGE} of=${part_boot} conv=fsync
+    /bin/dd if=${fpath}/${BOOT_IMAGE} of=${part_boot}
     if [ $? -ne 0 ]; then
         ERROR "Failed to write ${BOOT_IMAGE} to ${part_boot}"
         update_fail
@@ -152,7 +152,7 @@ update_rootfs()
     #     update_fail
     # fi
 
-    /bin/dd if=${fpath}/${ROOTFS_IMAGE} of=${part_rootfs} conv=fsync
+    /bin/dd if=${fpath}/${ROOTFS_IMAGE} of=${part_rootfs}
     if [ $? -ne 0 ]; then
         ERROR "Failed to write rootfs"
         update_fail
