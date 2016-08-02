@@ -40,6 +40,8 @@ fi
 LCD="/dev/null" #"/dev/tty0"
 VERIFICATION_TOOL=/usr/sbin/verify
 PUBLIC_KEY=/etc/verify_pub.pem
+UBOOT_SPL=uboot-spl.img
+UBOOT_DTB=u-boot-dtb.bin
 BOOT_IMAGE=boot.img
 BOOT_SIGNATURE=boot.sgn
 ROOTFS_IMAGE=rootfs.img
@@ -105,8 +107,55 @@ update_init()
 ################# PARTITION EMMC ##############################################
 partition()
 {
-    echo partition
+    cgpt create ${node}
+    cgpt add -t data -l loader1 -b 32K -s 4064 /dev/sdb 
+    cgpt add -t 1 -l reserved1 -b 32 -s 4064 /dev/sdb 
+    cgpt add -t 1 -l reserved2 -b 32 -s 4064 /dev/sdb 
+    cgpt add -t 1 -l loader2 -b 32 -s 4064 /dev/sdb 
+    cgpt add -t 1 -l atf -b 32 -s 4064 /dev/sdb 
+    cgpt add -t 1 -l boot -b 32 -s 4064 /dev/sdb 
+    cgpt add -t 1 -l rootfs -b 32 -s 4064 /dev/sdb    
+
++	"uuid_disk=${uuid_gpt_disk};" \
++	"name=loader1,start=32K,size=4064K,uuid=${uuid_gpt_loader1};" \
++	"name=reserved1,size=64K,uuid=${uuid_gpt_reserved1};" \
++	"name=reserved2,size=4M,uuid=${uuid_gpt_reserved2};" \
++	"name=loader2,size=4MB,uuid=${uuid_gpt_loader2};" \
++	"name=atf,size=128M,uuid=${uuid_gpt_atf};" \
++	"name=boot,size=128M,bootable,uuid=${uuid_gpt_boot};" \
++	"name=rootfs,size=-,uuid=${uuid_gpt_rootfs};\0" \
 }
+
+################# UPDATEU BOOT ##################################################
+update_uboot() 
+{
+    DEBUG "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    DEBUG " UPDATING UBOOT "
+    DEBUG "-----------------------------------------------------"
+
+    if [ ! -f ${fpath}/${UBOOT_SPL} ] ; then
+        ERROR "${UBOOT_SPL}  not found"
+        update_fail
+    fi
+    if [ ! -f ${fpath}/${UBOOT_DTB} ] ; then
+        ERROR "${UBOOT_DTB}  not found"
+        update_fail
+    fi
+
+    INFO "Writing ${UBOOT_SPL} on ${node} ..."
+    /bin/dd if=${fpath}/${UBOOT_SPL} of=${node} seek=64
+    if [ $? -ne 0 ]; then
+        ERROR "Failed to write ${UBOOT_SPL} to ${node}"
+        update_fail
+    fi
+
+    INFO "Writing ${UBOOT_DTB} on ${node} ..."
+    /bin/dd if=${fpath}/${UBOOT_DTB} of=${node} seek=256
+    if [ $? -ne 0 ]; then
+        ERROR "Failed to write ${UBOOT_DTB} to ${node}"
+        update_fail
+    fi    
+} 
 
 ################# UPDATE BOOT ##################################################
 update_boot() 
@@ -172,6 +221,8 @@ NOTIFY "-----------------------------------------------------"
 
 
 update_init
+partition
+update_uboot
 update_boot
 update_rootfs
 #if update is successful, we come here, call update_success.
