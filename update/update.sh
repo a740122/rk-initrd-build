@@ -41,7 +41,7 @@ LCD="/dev/null" #"/dev/tty0"
 VERIFICATION_TOOL=/usr/sbin/verify
 PUBLIC_KEY=/etc/verify_pub.pem
 UBOOT_SPL=uboot-spl.img
-UBOOT_DTB=u-boot-dtb.bin
+UBOOT_DTB=u-boot-dtb.img
 BOOT_IMAGE=boot.img
 BOOT_SIGNATURE=boot.sgn
 ROOTFS_IMAGE=rootfs.img
@@ -107,57 +107,57 @@ update_init()
 ################# PARTITION EMMC ##############################################
 partition()
 {
-    cat << EOF | sudo gdisk /dev/sdb
-    o
-    y
-    n
-    1
+cat << EOF | gdisk ${node}
+o
+y
+n
+1
 
-    +4046k
++4046k
 
-    n
-    2
+n
+2
 
-    +64K
++64K
 
-    n
-    3
+n
+3
 
-    +4M
++4M
 
-    n
-    4
+n
+4
 
-    +4M
++4M
 
-    n
-    5
+n
+5
 
-    +128M
++128M
 
-    n
-    6
+n
+6
 
-    +128M
++128M
 
-    n
-    7
+n
+7
 
 
 
-    w
-    y
-    EOF
-    
-    cat << EOF | sudo gdisk /dev/sdb
-    x
-    a
-    6
-    2
+w
+y
+EOF
 
-    w
-    y
-    EOF
+cat << EOF | gdisk ${node}
+x
+a
+6
+2
+
+w
+y
+EOF
 }
 
 ################# UPDATEU BOOT ##################################################
@@ -255,8 +255,8 @@ NOTIFY "-----------------------------------------------------"
 
 
 update_init
-partition
 update_uboot
+partition
 update_boot
 update_rootfs
 #if update is successful, we come here, call update_success.
