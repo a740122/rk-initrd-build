@@ -107,7 +107,57 @@ update_init()
 ################# PARTITION EMMC ##############################################
 partition()
 {
-    # done in uboot
+    cat << EOF | sudo gdisk /dev/sdb
+    o
+    y
+    n
+    1
+
+    +4046k
+
+    n
+    2
+
+    +64K
+
+    n
+    3
+
+    +4M
+
+    n
+    4
+
+    +4M
+
+    n
+    5
+
+    +128M
+
+    n
+    6
+
+    +128M
+
+    n
+    7
+
+
+
+    w
+    y
+    EOF
+    
+    cat << EOF | sudo gdisk /dev/sdb
+    x
+    a
+    6
+    2
+
+    w
+    y
+    EOF
 }
 
 ################# UPDATEU BOOT ##################################################
