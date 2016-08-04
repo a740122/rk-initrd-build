@@ -148,7 +148,7 @@ n
 w
 y
 EOF
-
+# set bootable
 cat << EOF | gdisk ${node}
 x
 a
@@ -158,6 +158,33 @@ a
 w
 y
 EOF
+#partition name
+cat << EOF | gdisk ${node}
+c
+1
+loader1
+c
+2
+reserved1
+c
+3
+reserved2
+c
+4
+loader2
+c
+5
+atf
+c
+6
+boot
+c
+7
+rootfs
+w
+y
+EOF
+
 }
 
 ################# UPDATEU BOOT ##################################################
